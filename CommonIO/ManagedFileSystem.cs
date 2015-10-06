@@ -188,7 +188,6 @@ namespace CommonIO
         {
             var result = new FileSystemMetadata();
 
-            result.Attributes = info.Attributes;
             result.Exists = info.Exists;
             result.FullName = info.FullName;
             result.Extension = info.Extension;
@@ -196,6 +195,9 @@ namespace CommonIO
 
             if (result.Exists)
             {
+                result.Attributes = info.Attributes;
+                result.IsDirectory = info is DirectoryInfo || (result.Attributes & FileAttributes.Directory) == FileAttributes.Directory;
+
                 var fileInfo = info as FileInfo;
                 if (fileInfo != null)
                 {
@@ -205,6 +207,10 @@ namespace CommonIO
 
                 result.CreationTimeUtc = GetCreationTimeUtc(info);
                 result.LastWriteTimeUtc = GetLastWriteTimeUtc(info);
+            }
+            else
+            {
+                result.IsDirectory = info is DirectoryInfo;
             }
 
             return result;

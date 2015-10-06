@@ -55,12 +55,6 @@ namespace CommonIO
         /// Gets a value indicating whether this instance is directory.
         /// </summary>
         /// <value><c>true</c> if this instance is directory; otherwise, <c>false</c>.</value>
-        public bool IsDirectory
-        {
-            get
-            {
-                return (Attributes & FileAttributes.Directory) == FileAttributes.Directory;
-            }
-        }
+        public bool IsDirectory { get; set; }
     }
 }
