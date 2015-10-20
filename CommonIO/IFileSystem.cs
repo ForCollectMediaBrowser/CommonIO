@@ -32,24 +32,32 @@ namespace CommonIO
         void CreateShortcut(string shortcutPath, string target);
 
         /// <summary>
-        /// Gets the file system info.
+        /// Returns a <see cref="FileSystemMetadata"/> object for the specified file or directory path.
         /// </summary>
-        /// <param name="path">The path.</param>
-        /// <returns>FileSystemInfo.</returns>
+        /// <param name="path">A path to a file or directory.</param>
+        /// <returns>A <see cref="FileSystemMetadata"/> object.</returns>
+        /// <remarks>If the specified path points to a directory, the returned <see cref="FileSystemMetadata"/> object's
+        /// <see cref="FileSystemMetadata.IsDirectory"/> property will be set to true and all other properties will reflect the properties of the directory.</remarks>
         FileSystemMetadata GetFileSystemInfo(string path);
 
         /// <summary>
-        /// Gets the file information.
+        /// Returns a <see cref="FileSystemMetadata"/> object for the specified file path.
         /// </summary>
-        /// <param name="path">The path.</param>
-        /// <returns>FileSystemMetadata.</returns>
+        /// <param name="path">A path to a file.</param>
+        /// <returns>A <see cref="FileSystemMetadata"/> object.</returns>
+        /// <remarks><para>If the specified path points to a directory, the returned <see cref="FileSystemMetadata"/> object's
+        /// <see cref="FileSystemMetadata.IsDirectory"/> property and the <see cref="FileSystemMetadata.Exists"/> property will both be set to false.</para>
+        /// <para>For automatic handling of files <b>and</b> directories, use <see cref="GetFileSystemInfo"/>.</para></remarks>
         FileSystemMetadata GetFileInfo(string path);
 
         /// <summary>
-        /// Gets the directory information.
+        /// Returns a <see cref="FileSystemMetadata"/> object for the specified directory path.
         /// </summary>
-        /// <param name="path">The path.</param>
-        /// <returns>FileSystemMetadata.</returns>
+        /// <param name="path">A path to a directory.</param>
+        /// <returns>A <see cref="FileSystemMetadata"/> object.</returns>
+        /// <remarks><para>If the specified path points to a file, the returned <see cref="FileSystemMetadata"/> object's
+        /// <see cref="FileSystemMetadata.IsDirectory"/> property will be set to true and the <see cref="FileSystemMetadata.Exists"/> property will be set to false.</para>
+        /// <para>For automatic handling of files <b>and</b> directories, use <see cref="GetFileSystemInfo"/>.</para></remarks>
         FileSystemMetadata GetDirectoryInfo(string path);
 
         /// <summary>
