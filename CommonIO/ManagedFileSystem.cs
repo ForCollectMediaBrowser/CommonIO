@@ -124,10 +124,12 @@ namespace CommonIO
         }
 
         /// <summary>
-        /// Gets the file system info.
+        /// Returns a <see cref="FileSystemMetadata"/> object for the specified file or directory path.
         /// </summary>
-        /// <param name="path">The path.</param>
-        /// <returns>FileSystemInfo.</returns>
+        /// <param name="path">A path to a file or directory.</param>
+        /// <returns>A <see cref="FileSystemMetadata"/> object.</returns>
+        /// <remarks>If the specified path points to a directory, the returned <see cref="FileSystemMetadata"/> object's
+        /// <see cref="FileSystemMetadata.IsDirectory"/> property will be set to true and all other properties will reflect the properties of the directory.</remarks>
         public FileSystemMetadata GetFileSystemInfo(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -160,6 +162,14 @@ namespace CommonIO
             }
         }
 
+        /// <summary>
+        /// Returns a <see cref="FileSystemMetadata"/> object for the specified file path.
+        /// </summary>
+        /// <param name="path">A path to a file.</param>
+        /// <returns>A <see cref="FileSystemMetadata"/> object.</returns>
+        /// <remarks><para>If the specified path points to a directory, the returned <see cref="FileSystemMetadata"/> object's
+        /// <see cref="FileSystemMetadata.IsDirectory"/> property and the <see cref="FileSystemMetadata.Exists"/> property will both be set to false.</para>
+        /// <para>For automatic handling of files <b>and</b> directories, use <see cref="GetFileSystemInfo"/>.</para></remarks>
         public FileSystemMetadata GetFileInfo(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -172,6 +182,14 @@ namespace CommonIO
             return GetFileSystemMetadata(fileInfo);
         }
 
+        /// <summary>
+        /// Returns a <see cref="FileSystemMetadata"/> object for the specified directory path.
+        /// </summary>
+        /// <param name="path">A path to a directory.</param>
+        /// <returns>A <see cref="FileSystemMetadata"/> object.</returns>
+        /// <remarks><para>If the specified path points to a file, the returned <see cref="FileSystemMetadata"/> object's
+        /// <see cref="FileSystemMetadata.IsDirectory"/> property will be set to true and the <see cref="FileSystemMetadata.Exists"/> property will be set to false.</para>
+        /// <para>For automatic handling of files <b>and</b> directories, use <see cref="GetFileSystemInfo"/>.</para></remarks>
         public FileSystemMetadata GetDirectoryInfo(string path)
         {
             if (string.IsNullOrEmpty(path))
