@@ -33,13 +33,13 @@ namespace CommonIO
 
         protected void SetInvalidFileNameChars(bool enableManagedInvalidFileNameChars)
         {
-            // GetInvalidFileNameChars is less restrictive in Linux/Mac than Windows, this mimic Windows behavior for mono under Linux/Mac.
             if (enableManagedInvalidFileNameChars)
             {
                 _invalidFileNameChars = Path.GetInvalidFileNameChars();
             }
             else
             {
+                // GetInvalidFileNameChars is less restrictive in Linux/Mac than Windows, this mimic Windows behavior for mono under Linux/Mac.
                 _invalidFileNameChars = new char[41] { '\x00', '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x07',
             '\x08', '\x09', '\x0A', '\x0B', '\x0C', '\x0D', '\x0E', '\x0F', '\x10', '\x11', '\x12',
             '\x13', '\x14', '\x15', '\x16', '\x17', '\x18', '\x19', '\x1A', '\x1B', '\x1C', '\x1D',
@@ -488,14 +488,14 @@ namespace CommonIO
         {
             var searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
-            return new DirectoryInfo(path).EnumerateDirectories("*", searchOption).Select(GetFileSystemMetadata);
+            return ToMetadata(new DirectoryInfo(path).EnumerateDirectories("*", searchOption));
         }
 
         public IEnumerable<FileSystemMetadata> GetFiles(string path, bool recursive = false)
         {
             var searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
-            return new DirectoryInfo(path).EnumerateFiles("*", searchOption).Select(GetFileSystemMetadata);
+            return ToMetadata(new DirectoryInfo(path).EnumerateFiles("*", searchOption));
         }
 
         public IEnumerable<FileSystemMetadata> GetFileSystemEntries(string path, bool recursive = false)
@@ -505,11 +505,28 @@ namespace CommonIO
 
             if (EnableFileSystemRequestConcat)
             {
-                return directoryInfo.EnumerateDirectories("*", searchOption).Select(GetFileSystemMetadata)
-                                .Concat(directoryInfo.EnumerateFiles("*", searchOption).Select(GetFileSystemMetadata));
+                return ToMetadata(directoryInfo.EnumerateDirectories("*", searchOption))
+                                .Concat(ToMetadata(directoryInfo.EnumerateFiles("*", searchOption)));
             }
 
-            return directoryInfo.EnumerateFileSystemInfos("*", searchOption).Select(GetFileSystemMetadata);
+            return ToMetadata(directoryInfo.EnumerateFileSystemInfos("*", searchOption));
+        }
+
+        private IEnumerable<FileSystemMetadata> ToMetadata(IEnumerable<FileSystemInfo> infos)
+        {
+            return infos.Select(i =>
+            {
+                try
+                {
+                    return GetFileSystemMetadata(i);
+                }
+                catch (PathTooLongException)
+                {
+                    Logger.Warn("Path too long: {0}", i.FullName);
+                    return null;
+                }
+
+            }).Where(i => i != null);
         }
 
         public Stream OpenRead(string path)
