@@ -540,7 +540,8 @@ namespace CommonIO
                 }
                 catch (PathTooLongException)
                 {
-                    Logger.Warn("Path too long: {0}", i.FullName);
+                    //Logger.Warn("Path too long: {0}", i.FullName);
+                    Logger.Warn("Path too long");
                     return null;
                 }
 
