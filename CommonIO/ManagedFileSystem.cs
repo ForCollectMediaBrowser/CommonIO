@@ -506,14 +506,14 @@ namespace CommonIO
         {
             var searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
-            return ToMetadata(new DirectoryInfo(path).EnumerateDirectories("*", searchOption));
+            return ToMetadata(path, new DirectoryInfo(path).EnumerateDirectories("*", searchOption));
         }
 
         public IEnumerable<FileSystemMetadata> GetFiles(string path, bool recursive = false)
         {
             var searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
-            return ToMetadata(new DirectoryInfo(path).EnumerateFiles("*", searchOption));
+            return ToMetadata(path, new DirectoryInfo(path).EnumerateFiles("*", searchOption));
         }
 
         public IEnumerable<FileSystemMetadata> GetFileSystemEntries(string path, bool recursive = false)
@@ -523,14 +523,14 @@ namespace CommonIO
 
             if (EnableFileSystemRequestConcat)
             {
-                return ToMetadata(directoryInfo.EnumerateDirectories("*", searchOption))
-                                .Concat(ToMetadata(directoryInfo.EnumerateFiles("*", searchOption)));
+                return ToMetadata(path, directoryInfo.EnumerateDirectories("*", searchOption))
+                                .Concat(ToMetadata(path, directoryInfo.EnumerateFiles("*", searchOption)));
             }
 
-            return ToMetadata(directoryInfo.EnumerateFileSystemInfos("*", searchOption));
+            return ToMetadata(path, directoryInfo.EnumerateFileSystemInfos("*", searchOption));
         }
 
-        private IEnumerable<FileSystemMetadata> ToMetadata(IEnumerable<FileSystemInfo> infos)
+        private IEnumerable<FileSystemMetadata> ToMetadata(string parentPath, IEnumerable<FileSystemInfo> infos)
         {
             return infos.Select(i =>
             {
@@ -540,8 +540,9 @@ namespace CommonIO
                 }
                 catch (PathTooLongException)
                 {
+                    // Can't log using the FullName because it will throw the PathTooLongExceptiona again
                     //Logger.Warn("Path too long: {0}", i.FullName);
-                    Logger.Warn("Path too long");
+                    Logger.Warn("File or directory path too long. Parent folder: {0}", parentPath);
                     return null;
                 }
 
